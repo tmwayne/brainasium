@@ -1,0 +1,12 @@
+#
+# ------------------------------------------------------------------------------
+# To do
+# ------------------------------------------------------------------------------
+#
+
+- rename and refactor shared library for errors and exception
+- load shared library with autotools
+- get tests working
+- get configparse working
+- get argparse working
+- get shared libraries working
