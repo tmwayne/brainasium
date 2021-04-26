@@ -18,13 +18,11 @@ int main(int argc, char** argv) {
   load_plugins(registry, plugin_dir);
 
   game_T game = game_init(registry, "sample");
-
-  // TODO: free registry
   dict_free(&registry, (void (*)(void *)) entry_free);
 
   game->play();
 
-  // TODO: free game
+  game_free(&game);
 
 }
 
