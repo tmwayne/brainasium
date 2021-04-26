@@ -6,39 +6,25 @@
 // Tyler Wayne © 2021
 //
 
-#include <stdio.h> 
-#include <stdlib.h>
-#include <string.h>
-#include "configparse.h"
-#include "argparse.h"
-#include "assert.h"
+#include "dict.h" // dict_T, dict_new, dict_free
+#include "registry.h" // load_plugins
+#include "game.h" // game_T, game_init
 
 int main(int argc, char** argv) {
 
-  /* ARGUMENTS */
-  //char* ext = ".txt";
-  // Configurations
-  //struct configs configs;
-  //config_parse("/home/tyler/.cheatsheetsrc", &configs);
+  char *plugin_dir = "/home/tyler/.local/lib/gym/games";
 
-  // Defaults
-  struct arguments arguments;
-  arguments.with = 0;
-  arguments.without = 0;
-  // arguments.cs_dir = getenv("CHEATSHEETS_DIR");
-  // Don't know how long arguments.cs_dir is
-  //arguments.cs_dir = configs.cs_dir;
+  dict_T registry = dict_new();
+  load_plugins(registry, plugin_dir);
 
-  argp_parse(&argp, argc, argv, 0, 0, &arguments);
+  game_T game = game_init(registry, "sample");
 
-  /* PROGRAM LOGIC */
-  if (arguments.without)
-    printf("Optional arg without value: %d\n", arguments.without); 
-  
-  if (arguments.with)
-    printf("Optional arg with value: %s\n", arguments.with);
+  // TODO: free registry
+  dict_free(&registry, (void (*)(void *)) entry_free);
 
-  printf("Positional arg: %s\n", arguments.args[0]);
+  game->play();
+
+  // TODO: free game
 
 }
 

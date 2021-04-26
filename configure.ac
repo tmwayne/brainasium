@@ -7,8 +7,8 @@
 #
 
 AC_PREREQ([2.69])
-AC_INIT([Learnit], [0.1], [tylerwayne3@gmail.com])
-AM_INIT_AUTOMAKE
+AC_INIT([Gym], [0.1], [tylerwayne3@gmail.com])
+AM_INIT_AUTOMAKE([subdir-objects])
 
 LT_PREREQ([2.2.])
 LT_INIT([dlopen])
@@ -28,7 +28,7 @@ AC_CHECK_HEADERS([stdlib.h])
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
-AC_SEARCH_LIBS([dlopen])
+AC_SEARCH_LIBS([dlopen], [dl])
 
 AC_CONFIG_FILES([
   Makefile
