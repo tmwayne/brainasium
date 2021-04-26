@@ -33,6 +33,7 @@ AC_SEARCH_LIBS([dlopen])
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
+  sample-game/Makefile
   test/Makefile])
 
 AC_OUTPUT

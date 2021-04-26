@@ -1,7 +1,7 @@
-bin_PROGRAMS = learnit
+bin_PROGRAMS = gym
 
-learnit_SOURCES = main.c
-learnit_CPPFLAGS = -I$(includedir)
-learnit_LDADD = $(libdir)/libmem.la \
+gym_SOURCES = main.c
+gym_CPPFLAGS = -I$(includedir)
+gym_LDADD = $(libdir)/libmem.la \
 	$(libdir)/liberror.la \
 	$(libdir)/libconfigparse.la
