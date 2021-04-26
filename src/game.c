@@ -9,10 +9,10 @@
 #include <stdio.h> // fprintf
 #include <stdlib.h>
 #include <dlfcn.h> // dlopen, dlclose
+#include <mem.h> // NEW0
+#include <error.h> // assert
 #include "registry.h"
 #include "game.h"
-#include "mem.h" // NEW0
-#include "assert.h" // assert
 
 game_T game_new() {
   

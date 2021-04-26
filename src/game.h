@@ -9,7 +9,7 @@
 #ifndef GAME_INCLUDED
 #define GAME_INCLUDED
 
-#include "dict.h"
+#include <dict.h>
 
 #define G game_T
 typedef struct G *G;

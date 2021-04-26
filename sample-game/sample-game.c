@@ -9,7 +9,7 @@
 #include <stdio.h>     // printf, getchar
 #include "game.h"      // game_T, game_new, 
 #include "registry.h"  // register_game, entry_T, entry_new
-#include "assert.h"    // assert
+#include <error.h> // assert
 
 void play() {
 

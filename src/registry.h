@@ -17,7 +17,7 @@
 #ifndef REGISTRY_INCLUDED
 #define REGISTRY_INCLUDED
 
-#include "dict.h"
+#include <dict.h>
 
 #define E entry_T
 typedef struct E {

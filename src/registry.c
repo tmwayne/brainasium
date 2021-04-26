@@ -13,10 +13,10 @@
 #include <unistd.h> // getcwd, chdir
 #include <dlfcn.h>  // dlopen, dlclose
 #include <string.h> // strdup
-#include "c-strings.h"
-#include "dict.h"
-#include "mem.h" // NEW, FREE
-#include "assert.h" // assert
+#include <c-strings.h>
+#include <dict.h>
+#include <mem.h> // NEW, FREE
+#include <error.h> // assert
 #include "registry.h"
 
 entry_T entry_new(char *plugin_path, void *(*init)()) {

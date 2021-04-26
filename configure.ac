@@ -29,6 +29,11 @@ AC_CHECK_HEADERS([stdlib.h])
 
 # Checks for library functions.
 AC_SEARCH_LIBS([dlopen], [dl])
+AC_SEARCH_LIBS([Mem_alloc], [mem])
+AC_SEARCH_LIBS([Except_raise], [error])
+AC_SEARCH_LIBS([strmatch], [cstring])
+AC_SEARCH_LIBS([dict_new], [dict])
+AC_SEARCH_LIBS([configparse], [configparse])
 
 AC_CONFIG_FILES([
   Makefile

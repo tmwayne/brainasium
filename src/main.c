@@ -6,7 +6,7 @@
 // Tyler Wayne © 2021
 //
 
-#include "dict.h" // dict_T, dict_new, dict_free
+#include <dict.h> // dict_T, dict_new, dict_free
 #include "registry.h" // load_plugins
 #include "game.h" // game_T, game_init
 
