@@ -11,11 +11,14 @@
 #include <configparse.h> // configparse
 #include <time.h>        // time_t,
 #include "registry.h"    // load_plugins
+#include "argparse.h"
+
+// TODO: change "game" to exercise
 #include "game.h"        // game_T, game_init
 
 #define DEFAULT_USER_RC_PATH "/home/tyler/.config/gymrc"
-#define DEFAULT_GAMES_DIR "/home/tyler/.local/lib/gym/games"
-#define DEFAULT_GAME "sample"
+#define DEFAULT_EXERCISE_DIR "/home/tyler/.local/lib/gym/games"
+#define DEFAULT_EXERCISE "sample"
 
 static void set_defaults(dict_T);
 
@@ -44,13 +47,23 @@ int main(int argc, char** argv) {
   FILE *userrc = fopen(DEFAULT_USER_RC_PATH, "r");
   if (userrc) configparse(configs, userrc);
 
-  // TODO: Load command-line arguments
+  // Load command-line arguments
+
+  // ARGP_IN_ORDER : force arguments to be parsed in order 
+  // so that flags aren't parsed early
+  argp_parse(&argp, argc, argv, ARGP_IN_ORDER, 0, configs);
 
   // Load game
   dict_T registry = dict_new();
-  load_plugins(registry, dict_get(configs, "games_dir"));
+  load_plugins(registry, dict_get(configs, "exercise_dir"));
 
-  game_T game = game_init(registry, dict_get(configs, "game"));
+  // TODO: check that plugin for selected exercise is loaded
+  char *exercise = dict_get(configs, "exercise");
+  if (!exercise) {
+    fprintf(stderr, "Exercise not recognized...\n");
+    exit(EXIT_FAILURE);
+  }
+  game_T game = game_init(registry, exercise);
   dict_free(&registry, (void (*)(void *)) entry_free);
 
   // Play
@@ -65,7 +78,7 @@ int main(int argc, char** argv) {
   if (fout) {
     char now[20];
     fprintf(fout, "%s|", timestamp(now, 20));
-    fprintf(fout, "%s|", dict_get(configs, "game"));
+    fprintf(fout, "%s|", exercise);
     fprintf(fout, "%ld\n", elapsed);
     // TODO: write score
     fclose(fout);
@@ -78,7 +91,7 @@ int main(int argc, char** argv) {
 
 static void set_defaults(dict_T configs) {
   
-  dict_set(configs, "games_dir", DEFAULT_GAMES_DIR);
-  dict_set(configs, "game", DEFAULT_GAME);
+  dict_set(configs, "exercise_dir", DEFAULT_EXERCISE_DIR);
+  dict_set(configs, "exercise", DEFAULT_EXERCISE);
 
 }
