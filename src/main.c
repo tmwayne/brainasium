@@ -25,10 +25,11 @@ static char *timestamp(char *, size_t);
 
 int main(int argc, char** argv) {
 
-  // Load configurations
+  // Set defaults
   dict_T configs = dict_new();
   set_defaults(configs);
 
+  // Load configurations
   FILE *userrc = fopen(DEFAULT_USER_RC_PATH, "r");
   if (userrc) configparse(configs, userrc);
 
@@ -38,6 +39,10 @@ int main(int argc, char** argv) {
   // so that flags aren't parsed early
   argp_parse(&argp, argc, argv, ARGP_IN_ORDER, 0, configs);
   // TODO: free any structures related to argp
+
+  // Remaining arguments are passed to the exercise program
+  argc = (int) (long) dict_get(configs, "argc");
+  argv = dict_get(configs, "argv");
 
   // Load game
   dict_T registry = dict_new();
@@ -53,14 +58,9 @@ int main(int argc, char** argv) {
 
   // Play
   time_t start = time(NULL);
-
-  // Play game and pass an program specific arguments
-  argc = (int) (long) dict_get(configs, "argc");
-  argv = dict_get(configs, "argv");
   game->play(argc, argv);
 
   time_t elapsed = time(NULL) - start;
-
   printf("It took you %ld seconds...\n", elapsed);
 
   // Save output
