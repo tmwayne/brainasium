@@ -11,7 +11,7 @@
 #include "registry.h"  // register_game, entry_T, entry_new
 #include <error.h> // assert
 
-void play() {
+void play(int argc, char **argv) {
 
   printf("Press Enter: ");
   while (getchar()) break;

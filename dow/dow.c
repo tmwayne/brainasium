@@ -43,7 +43,7 @@ int doomsday(int year) {
 
 }
 
-void play() {
+void play(int argc, char **argv) {
 
   srand(time(NULL)); // set random seed
 

@@ -6,11 +6,12 @@
 // Create and initialize Games for the Gym
 //
 
-#include <stdio.h> // fprintf
+#include <stdio.h>    // fprintf
 #include <stdlib.h>
-#include <dlfcn.h> // dlopen, dlclose
-#include <mem.h> // NEW0
-#include <error.h> // assert
+#include <dlfcn.h>    // dlopen, dlclose
+
+#include <mem.h>      // NEW0
+#include <error.h>    // assert
 #include "registry.h"
 #include "game.h"
 
@@ -37,8 +38,14 @@ game_T game_init(dict_T registry, char *type) {
   }
     
   // Open plugin dynamic library if one has been provided
-  // TODO: check the status of dlopen
   dlhandle = entry->plugin_path ? dlopen(entry->plugin_path, RTLD_NOW) : NULL;
+
+  // TODO: check if a valid entry can be made without a plugin_path
+  // if (!dlhandle) {
+    // fprintf(stderr, "%s\n", dlerror());
+    // exit(exit_failure);
+  // }
+  //
   init = (game_T (*)()) entry->init;
   game = init();
   game->plugin_handle = dlhandle;
@@ -59,15 +66,3 @@ void game_free(game_T *game) {
   FREE(*game);
 
 }
-
-#ifdef GAME_DEBUG
-int main() {
-
-  char *type = "postgres";
-  printf("%s = postgres: %d\n", type, is_string_match(type, "postgres"));
-
-  game_T game = game_init(type);
-  game_free(game);
-
-}
-#endif

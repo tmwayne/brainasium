@@ -7,17 +7,10 @@
 //
 
 #include <argp.h>
-#include <dict.h> // dict_set
+#include <dict.h> // dict_T, dict_set
 
 const char *argp_program_version = "Program version\n";
 const char *argp_program_bug_address = "<tylerwayne3@gmail.com>";
-
-struct arguments {
-  char *exercise;   // Sub-program for which to capture remaining args
-  char **argv;      // additional arguments to pass to exercise program
-  int argc;         // argc to pass to exercise program
-
-};
 
 static struct argp_option options[] = {
   // {"with-value", 'a', "file", 0, "Optional argument with value"},
@@ -27,8 +20,6 @@ static struct argp_option options[] = {
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
-  // struct arguments* arguments = state->input;
-
   dict_T configs = state->input;
 
   switch (key) {
@@ -37,24 +28,20 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
     // stop at the first positional arg and capture the remaining ones
     case ARGP_KEY_ARG:
-      // arguments->exercise = arg;
-      // arguments->argv = &state->argv[--state->next];
-      // arguments->argc = state->argc - state->next;
       dict_set(configs, "exercise", arg);
       dict_set(configs, "argv", &state->argv[--state->next]);
       dict_set(configs, "argc", (void *) (long) state->argc - state->next);
-      // dict_set(configs, 
-      state->next = state->argc;
+      state->next = state->argc; // stop parsing
       break;
 
-    // at least one positional arg must be passed
-    case ARGP_KEY_END: if (state->arg_num < 1) argp_usage(state); break;
+    // Here we can enforce the number of positional arguments if we so choose
+    // case ARGP_KEY_END: if (state->arg_num < 1) argp_usage(state); break;
     default: return ARGP_ERR_UNKNOWN;
   }
 
   return 0;
 }
 
-static char args_doc[] = "exercise program";
+static char args_doc[] = "exercise";
 static char doc[] = "gym -- train with various exercises and record results";
 static struct argp argp = { options, parse_opt, args_doc, doc };
