@@ -43,7 +43,7 @@ int doomsday(int year) {
 
 }
 
-void play(int argc, char **argv) {
+int play(int argc, char **argv) {
 
   srand(time(NULL)); // set random seed
 
@@ -56,18 +56,17 @@ void play(int argc, char **argv) {
 
   printf("%d\n", doomsday(year));
 
+  return 0;
+
 }
 
 // interface to Gym routine ----------------------------------------------------
-
-void dow_free(){};
 
 game_T dow_init() {
 
   game_T game = game_new();
 
   game->play = play;
-  game->free = dow_free;
   game->args = NULL;
 
   return game;

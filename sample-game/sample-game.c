@@ -11,22 +11,21 @@
 #include "registry.h"  // register_game, entry_T, entry_new
 #include <error.h> // assert
 
-void play(int argc, char **argv) {
+int play(int argc, char **argv) {
 
   printf("Press Enter: ");
   while (getchar()) break;
   printf("You win!\n");
 
-}
+  return 0;
 
-void sample_game_free(){};
+}
 
 game_T sample_game_init() {
 
   game_T game = game_new();
 
   game->play = play;
-  game->free = sample_game_free;
   game->args = NULL;
 
   return game;

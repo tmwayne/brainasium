@@ -61,6 +61,8 @@ int main(int argc, char** argv) {
 
   time_t elapsed = time(NULL) - start;
 
+  printf("It took you %ld seconds...\n", elapsed);
+
   // Save output
   FILE *fout = fopen(dict_get(configs, "output_file"), "a");
   if (fout) {

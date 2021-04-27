@@ -45,7 +45,7 @@ game_T game_init(dict_T registry, char *type) {
     // fprintf(stderr, "%s\n", dlerror());
     // exit(exit_failure);
   // }
-  //
+  
   init = (game_T (*)()) entry->init;
   game = init();
   game->plugin_handle = dlhandle;
@@ -58,10 +58,8 @@ void game_free(game_T *game) {
   
   assert(game && *game);
 
-  (*game)->free((*game)->args);
-
-  if ((*game)->plugin_handle)
-    dlclose((*game)->plugin_handle);
+  // (*game)->free((*game)->args);
+  if ((*game)->plugin_handle) dlclose((*game)->plugin_handle);
 
   FREE(*game);
 

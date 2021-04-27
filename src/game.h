@@ -15,8 +15,7 @@
 typedef struct G *G;
 
 struct G {
-  void (*play)(int argc, char **argv);
-  void (*free)(void *);
+  int (*play)(int argc, char **argv);
   void *plugin_handle;
   void *args;
 };
