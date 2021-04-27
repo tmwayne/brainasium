@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
   dict_T registry = dict_new();
   load_plugins(registry, dict_get(configs, "games_dir"));
 
-  game_T game = game_init(registry, DEFAULT_GAME);
+  game_T game = game_init(registry, dict_get(configs, "game"));
   dict_free(&registry, (void (*)(void *)) entry_free);
 
   // Play
@@ -63,10 +63,9 @@ int main(int argc, char** argv) {
   // Save output
   FILE *fout = fopen(dict_get(configs, "output_file"), "a");
   if (fout) {
-    // TODO: write timestamp
     char now[20];
     fprintf(fout, "%s|", timestamp(now, 20));
-    fprintf(fout, "%s|", DEFAULT_GAME);
+    fprintf(fout, "%s|", dict_get(configs, "game"));
     fprintf(fout, "%ld\n", elapsed);
     // TODO: write score
     fclose(fout);
@@ -80,5 +79,6 @@ int main(int argc, char** argv) {
 static void set_defaults(dict_T configs) {
   
   dict_set(configs, "games_dir", DEFAULT_GAMES_DIR);
+  dict_set(configs, "game", DEFAULT_GAME);
 
 }

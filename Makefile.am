@@ -1,3 +1,3 @@
-SUBDIRS = src sample-game test
+SUBDIRS = src sample-game dow test
 
 ACLOCAL_AMFLAGS = -I m4

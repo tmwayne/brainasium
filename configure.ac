@@ -40,6 +40,7 @@ AC_CONFIG_FILES([
   Makefile
   src/Makefile
   sample-game/Makefile
+  dow/Makefile
   test/Makefile])
 
 AC_OUTPUT
