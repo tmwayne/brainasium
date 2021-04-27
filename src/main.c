@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
   load_plugins(registry, dict_get(configs, "exercise_dir"));
 
   char *exercise = dict_get(configs, "exercise");
-  if (!exercise) {
+  if (!dict_get(registry, exercise)) {
     fprintf(stderr, "Exercise not recognized...\n");
     exit(EXIT_FAILURE);
   }
