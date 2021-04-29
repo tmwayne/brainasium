@@ -23,6 +23,8 @@
 #include "game.h"
 #include "registry.h"
 
+#define EXERCISE_GAME "abacus"
+
 enum ops { ADD, SUB, MUL, DIV };
 
 int select_op(char *input) {
@@ -202,7 +204,7 @@ double play(int argc, char **argv) {
 
 // interface to Gym routine ----------------------------------------------------
 
-game_T abacus_init() {
+game_T init() {
 
   game_T game = game_new();
 
@@ -213,11 +215,11 @@ game_T abacus_init() {
 
 }
 
-void register_game(dict_T registry, char *plugin_path) {
+void add_to_registry(dict_T registry, char *plugin_path) {
 
   assert(registry && plugin_path);
 
-  entry_T entry = entry_new(plugin_path, (void *(*)()) abacus_init);
-  dict_set(registry, "abacus", entry);
+  entry_T entry = entry_new(plugin_path, (void *(*)()) init);
+  dict_set(registry, EXERCISE_GAME, entry);
 
 }  

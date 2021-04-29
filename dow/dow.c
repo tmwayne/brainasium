@@ -17,6 +17,8 @@
 #include "registry.h"   // entry_new
 #include "game.h"       // game_new
 
+#define EXERCISE_NAME "dow"
+
 #define YEAR_MIN 1700
 #define YEAR_MAX 2100
 
@@ -67,7 +69,7 @@ double play(int argc, char **argv) {
 
 // interface to Gym routine ----------------------------------------------------
 
-game_T dow_init() {
+game_T init() {
 
   game_T game = game_new();
 
@@ -78,11 +80,11 @@ game_T dow_init() {
 
 }
 
-void register_game(dict_T registry, char *plugin_path) {
+void add_to_registry(dict_T registry, char *plugin_path) {
 
   assert(registry && plugin_path);
 
-  entry_T entry = entry_new(plugin_path, (void *(*)()) dow_init);
-  dict_set(registry, "dow", entry);
+  entry_T entry = entry_new(plugin_path, (void *(*)()) init);
+  dict_set(registry, EXERCISE_NAME, entry);
 
 }  

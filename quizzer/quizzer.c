@@ -18,6 +18,8 @@
 #include "game.h"              // game_T, game_new
 #include "registry.h"          // entry_T, entry_new
 
+#define EXERCISE_NAME "quizzer"
+
 #define NLINES 128
 #define MAX_BUF 128
 
@@ -44,6 +46,7 @@ int load_quiz(struct pair **quiz, FILE *fd) {
   char line[LINE_MAX+1];
   int n = 0;
 
+  // TODO: prevent segfaults when >2 fields in input
   for ( ; n<NLINES && get_line(line, LINE_MAX, fd)>0; n++ ) {
     if (!(quiz[n] = calloc(1, sizeof(struct pair)))) return -1;
     char *saveptr = NULL;
@@ -114,7 +117,7 @@ double play(int argc, char **argv) {
 
 // interface to Gym routine ----------------------------------------------------
 
-game_T quizzer_init() {
+game_T init() {
 
   game_T game = game_new();
 
@@ -125,11 +128,11 @@ game_T quizzer_init() {
 
 }
 
-void register_game(dict_T registry, char *plugin_path) {
+void add_to_registry(dict_T registry, char *plugin_path) {
 
   assert(registry && plugin_path);
 
-  entry_T entry = entry_new(plugin_path, (void *(*)()) quizzer_init);
-  dict_set(registry, "quizzer", entry);
+  entry_T entry = entry_new(plugin_path, (void *(*)()) init);
+  dict_set(registry, EXERCISE_NAME, entry);
 
 }  

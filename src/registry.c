@@ -90,14 +90,14 @@ void register_plugin(dict_T registry, char *plugin_path) {
 
   dlerror(); // clear any existing error
 
-  void (*register_game)(dict_T, char *) = dlsym(dlhandle, "register_game");
+  void (*add_to_registry)(dict_T, char *) = dlsym(dlhandle, "add_to_registry");
 
   if ((error = dlerror()) != NULL) {
     fprintf(stderr, "%s\n", error);
     exit(EXIT_FAILURE);
   }
 
-  register_game(registry, plugin_path);
+  add_to_registry(registry, plugin_path);
 
   dlclose(dlhandle);
 
