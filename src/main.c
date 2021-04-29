@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 
   // Play
   time_t start = time(NULL);
-  game->play(argc, argv);
+  double score = game->play(argc, argv);
 
   time_t elapsed = time(NULL) - start;
   printf("It took you %ld seconds...\n", elapsed);
@@ -69,7 +69,8 @@ int main(int argc, char** argv) {
     char now[20];
     fprintf(fout, "%s|", timestamp(now, 20));
     fprintf(fout, "%s|", exercise);
-    fprintf(fout, "%ld\n", elapsed);
+    fprintf(fout, "%ld|", elapsed);
+    fprintf(fout, "%g\n", score);
     // TODO: write score
     fclose(fout);
   }

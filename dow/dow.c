@@ -43,20 +43,25 @@ int doomsday(int year) {
 
 }
 
-int play(int argc, char **argv) {
+double play(int argc, char **argv) {
 
   srand(time(NULL)); // set random seed
 
   int year = random_year();
+  int answer = doomsday(year);
 
-  char *prompt = "What is the day of the week for July 4th, %d ?";
+  char *prompt = "What is the day of the week for July 4th, %d? ";
   printf(prompt, year);
 
-  while (getchar()) break;
+  char c;
+  while (c = getchar()) break;
 
-  printf("%d\n", doomsday(year));
+  int score = (c == answer + '0');
 
-  return 0;
+  if (score) printf("You got it!\n");
+  else printf("Nope, it's %d\n", answer);
+
+  return score;
 
 }
 

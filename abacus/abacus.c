@@ -131,7 +131,7 @@ double divide(int digits) {
 
 }
 
-int play(int argc, char **argv) {
+double play(int argc, char **argv) {
 
   // Default configurations
   int add_digits = 7;
@@ -196,7 +196,7 @@ int play(int argc, char **argv) {
       break;
   }
 
-  return 0;
+  return 1;
 
 }
 

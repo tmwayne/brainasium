@@ -11,13 +11,13 @@
 #include "registry.h"  // register_game, entry_T, entry_new
 #include <error.h> // assert
 
-int play(int argc, char **argv) {
+double play(int argc, char **argv) {
 
   printf("Press Enter: ");
   while (getchar()) break;
   printf("You win!\n");
 
-  return 0;
+  return 1;
 
 }
 
