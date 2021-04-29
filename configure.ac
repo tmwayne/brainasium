@@ -31,6 +31,7 @@ AC_CHECK_HEADERS([stdlib.h])
 # Checks for library functions.
 AC_SEARCH_LIBS([dlopen], [dl])
 AC_SEARCH_LIBS([pow], [m])
+AC_SEARCH_LIBS([readline], [readline])
 AC_SEARCH_LIBS([Mem_alloc], [mem])
 AC_SEARCH_LIBS([assert], [error])
 AC_SEARCH_LIBS([strmatch], [cstring])
@@ -43,6 +44,7 @@ AC_CONFIG_FILES([
   sample-game/Makefile
   dow/Makefile
   abacus/Makefile
+  quizzer/Makefile
   test/Makefile])
 
 AC_OUTPUT
