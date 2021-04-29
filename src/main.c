@@ -13,11 +13,10 @@
 #include "registry.h"    // load_plugins
 #include "argparse.h"
 
-// TODO: change "game" to exercise
-#include "game.h"        // game_T, game_init
+#include "exercise.h"    // exercise_T, exercise_init
 
 #define DEFAULT_USER_RC_PATH "/home/tyler/.config/gymrc"
-#define DEFAULT_EXERCISE_DIR "/home/tyler/.local/lib/gym/games"
+#define DEFAULT_EXERCISE_DIR "/home/tyler/.local/lib/gym/exercises"
 #define DEFAULT_EXERCISE "sample"
 
 static void set_defaults(dict_T);
@@ -44,21 +43,21 @@ int main(int argc, char** argv) {
   argc = (int) (long) dict_get(configs, "argc");
   argv = dict_get(configs, "argv");
 
-  // Load game
+  // Load exercise
   dict_T registry = dict_new();
   load_plugins(registry, dict_get(configs, "exercise_dir"));
 
-  char *exercise = dict_get(configs, "exercise");
-  if (!dict_get(registry, exercise)) {
-    fprintf(stderr, "Exercise not recognized...\n");
+  char *selection = dict_get(configs, "exercise");
+  if (!dict_get(registry, selection)) {
+    fprintf(stderr, "Exercise selection not recognized...\n");
     exit(EXIT_FAILURE);
   }
-  game_T game = game_init(registry, exercise);
+  exercise_T exercise = exercise_init(registry, selection);
   dict_free(&registry, (void (*)(void *)) entry_free);
 
   // Play
   time_t start = time(NULL);
-  double score = game->play(argc, argv);
+  double score = exercise->play(argc, argv);
 
   time_t elapsed = time(NULL) - start;
   printf("It took you %ld seconds...\n", elapsed);
@@ -76,7 +75,7 @@ int main(int argc, char** argv) {
   }
 
   // Cleanup
-  game_free(&game);
+  exercise_free(&exercise);
 
 }
 

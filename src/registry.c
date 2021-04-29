@@ -6,17 +6,18 @@
 // Tyler Wayne © 2021
 //
 
-#include <stdio.h> // fprintf
+#include <stdio.h>  // fprintf
 #include <stdlib.h>
 #include <dirent.h> // opendir
 #include <limits.h> // PATH_MAX
 #include <unistd.h> // getcwd, chdir
 #include <dlfcn.h>  // dlopen, dlclose
 #include <string.h> // strdup
+
 #include <c-strings.h>
 #include <dict.h>
-#include <mem.h> // NEW, FREE
-#include <error.h> // assert
+#include <mem.h>    // NEW, FREE
+#include <error.h>  // assert
 #include "registry.h"
 
 entry_T entry_new(char *plugin_path, void *(*init)()) {

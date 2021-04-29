@@ -41,7 +41,7 @@ AC_SEARCH_LIBS([configparse], [configparse])
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
-  sample-game/Makefile
+  sample-exercise/Makefile
   dow/Makefile
   abacus/Makefile
   quizzer/Makefile

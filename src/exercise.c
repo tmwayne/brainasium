@@ -1,9 +1,9 @@
 //
 // -----------------------------------------------------------------------------
-// game.c
+// exercise.c
 // -----------------------------------------------------------------------------
 //
-// Create and initialize Games for the Gym
+// Create and initialize Exercise for the Gym
 //
 
 #include <stdio.h>    // fprintf
@@ -13,27 +13,27 @@
 #include <mem.h>      // NEW0
 #include <error.h>    // assert
 #include "registry.h"
-#include "game.h"
+#include "exercise.h"
 
-game_T game_new() {
+exercise_T exercise_new() {
   
-  game_T game;
-  NEW0(game);
-  return game;
+  exercise_T exercise;
+  NEW0(exercise);
+  return exercise;
 
 }
 
-game_T game_init(dict_T registry, char *type) {
+exercise_T exercise_init(dict_T registry, char *type) {
 
   void *dlhandle;
-  game_T (*init)();
-  game_T game;
+  exercise_T (*init)();
+  exercise_T exercise;
 
   assert(registry && type);
 
   entry_T entry;
   if (!(entry = dict_get(registry, type))) {
-    fprintf(stderr, "Failed to find game of type %s\n", type);
+    fprintf(stderr, "Failed to find exercise of type %s\n", type);
     exit(EXIT_FAILURE);
   }
     
@@ -46,21 +46,21 @@ game_T game_init(dict_T registry, char *type) {
     // exit(exit_failure);
   // }
   
-  init = (game_T (*)()) entry->init;
-  game = init();
-  game->plugin_handle = dlhandle;
+  init = (exercise_T (*)()) entry->init;
+  exercise = init();
+  exercise->plugin_handle = dlhandle;
   
-  return game;
+  return exercise;
 
 }
 
-void game_free(game_T *game) {
+void exercise_free(exercise_T *exercise) {
   
-  assert(game && *game);
+  assert(exercise && *exercise);
 
-  // (*game)->free((*game)->args);
-  if ((*game)->plugin_handle) dlclose((*game)->plugin_handle);
+  // (*exercise)->free((*exercise)->args);
+  if ((*exercise)->plugin_handle) dlclose((*exercise)->plugin_handle);
 
-  FREE(*game);
+  FREE(*exercise);
 
 }

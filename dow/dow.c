@@ -1,6 +1,6 @@
 //
 // -----------------------------------------------------------------------------
-// doomsday.c
+// dow.c
 // -----------------------------------------------------------------------------
 //
 // Generate values for practicing the Day of the Week calculations
@@ -12,10 +12,10 @@
 #include <stdio.h>      // printf
 #include <stdlib.h>     // rand, srand, RAND_MAX
 #include <time.h>       // time, clock, CLOCKS_PER_SEC
-#include <error.h>      // assert
 
+#include <error.h>      // assert
 #include "registry.h"   // entry_new
-#include "game.h"       // game_new
+#include "exercise.h"       // exercise_new
 
 #define EXERCISE_NAME "dow"
 
@@ -69,14 +69,14 @@ double play(int argc, char **argv) {
 
 // interface to Gym routine ----------------------------------------------------
 
-game_T init() {
+exercise_T init() {
 
-  game_T game = game_new();
+  exercise_T exercise = exercise_new();
 
-  game->play = play;
-  game->args = NULL;
+  exercise->play = play;
+  exercise->args = NULL;
 
-  return game;
+  return exercise;
 
 }
 

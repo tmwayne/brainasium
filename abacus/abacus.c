@@ -1,6 +1,6 @@
 //
 // -----------------------------------------------------------------------------
-// abacus-practice.c
+// abacus.c
 // -----------------------------------------------------------------------------
 //
 // Generate random numbers for practicing abacus calculations
@@ -20,7 +20,7 @@
 #include <error.h>        // assert
 #include <configparse.h>  // configparse
 #include <dict.h>         // dict_T, dict_new, dict_get
-#include "game.h"
+#include "exercise.h"
 #include "registry.h"
 
 #define EXERCISE_GAME "abacus"
@@ -204,14 +204,14 @@ double play(int argc, char **argv) {
 
 // interface to Gym routine ----------------------------------------------------
 
-game_T init() {
+exercise_T init() {
 
-  game_T game = game_new();
+  exercise_T exercise = exercise_new();
 
-  game->play = play;
-  game->args = NULL;
+  exercise->play = play;
+  exercise->args = NULL;
 
-  return game;
+  return exercise;
 
 }
 

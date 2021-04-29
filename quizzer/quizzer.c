@@ -15,7 +15,7 @@
 
 #include <c-strings.h>         // strmatch
 #include <error.h>             // assert
-#include "game.h"              // game_T, game_new
+#include "exercise.h"          // exercise_T, exercise_new
 #include "registry.h"          // entry_T, entry_new
 
 #define EXERCISE_NAME "quizzer"
@@ -117,14 +117,14 @@ double play(int argc, char **argv) {
 
 // interface to Gym routine ----------------------------------------------------
 
-game_T init() {
+exercise_T init() {
 
-  game_T game = game_new();
+  exercise_T exercise = exercise_new();
 
-  game->play = play;
-  game->args = NULL;
+  exercise->play = play;
+  exercise->args = NULL;
 
-  return game;
+  return exercise;
 
 }
 

@@ -1,7 +1,7 @@
-gamesdir = $(pkglibdir)/games
+exercisesdir = $(pkglibdir)/exercises
 
-games_LTLIBRARIES = abacus.la
+exercises_LTLIBRARIES = abacus.la
 
-abacus_la_SOURCES = abacus.c ../src/game.c ../src/registry.c
+abacus_la_SOURCES = abacus.c ../src/exercise.c ../src/registry.c
 abacus_la_CPPFLAGS = -I$(top_srcdir)/src
 abacus_la_LDFLAGS = -module

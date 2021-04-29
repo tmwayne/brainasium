@@ -1,15 +1,16 @@
 //
 // -----------------------------------------------------------------------------
-// sample-game.c
+// sample-exercise.c
 // -----------------------------------------------------------------------------
 //
-// Sample game for building out the backend for game
+// Sample exercise for building out the backend for exercise
 //
 
-#include <stdio.h>     // printf, getchar
-#include "game.h"      // game_T, game_new, 
-#include "registry.h"  // register_game, entry_T, entry_new
-#include <error.h> // assert
+#include <stdio.h>         // printf, getchar
+
+#include <error.h>         // assert
+#include "exercise.h"      // exercise_T, exercise_new, 
+#include "registry.h"      // add_to_registry, entry_T, entry_new
 
 #define EXERCISE_NAME "sample"
 
@@ -25,14 +26,14 @@ double play(int argc, char **argv) {
 
 // interface to Gym routine ----------------------------------------------------
 
-game_T init() {
+exercise_T init() {
 
-  game_T game = game_new();
+  exercise_T exercise = exercise_new();
 
-  game->play = play;
-  game->args = NULL;
+  exercise->play = play;
+  exercise->args = NULL;
 
-  return game;
+  return exercise;
 
 }
 
