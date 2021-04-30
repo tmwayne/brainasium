@@ -14,7 +14,7 @@
 #include <dlfcn.h>  // dlopen, dlclose
 #include <string.h> // strdup
 
-#include <c-strings.h>
+#include <cstrings.h>
 #include <dict.h>
 #include <mem.h>    // NEW, FREE
 #include <error.h>  // assert

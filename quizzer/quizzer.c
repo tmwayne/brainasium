@@ -13,7 +13,7 @@
 #include <string.h>            // strdup
 #include <readline/readline.h> // readline
 
-#include <c-strings.h>         // strmatch
+#include <cstrings.h>         // strmatch
 #include <error.h>             // assert
 #include "exercise.h"          // exercise_T, exercise_new
 #include "registry.h"          // entry_T, entry_new
@@ -69,7 +69,7 @@ int give_quiz(struct pair **quiz, int len) {
     for ( tries=0; tries < 3; tries++) {
       // TODO: use the stack instead of the allocating on the heap every time
       char *guess = readline(NULL);
-      if (strmatch(guess, quiz[i]->b)) {
+      if (strcasematch(guess, quiz[i]->b)) {
         nright++;
         break;
       }
