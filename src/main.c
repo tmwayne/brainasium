@@ -70,7 +70,6 @@ int main(int argc, char** argv) {
     fprintf(fout, "%s|", exercise);
     fprintf(fout, "%ld|", elapsed);
     fprintf(fout, "%g\n", score);
-    // TODO: write score
     fclose(fout);
   }
 
@@ -86,18 +85,10 @@ static void set_defaults(dict_T configs) {
 
 }
 
-static char *timestamp(char *buf, size_t len) {
-
-  if (buf && len < 20) return NULL;
-  else if (!buf) buf = calloc(20, sizeof(char));
+char *timestamp(char *buf, size_t len) {
 
   time_t now = time(NULL);
-  struct tm *tm = localtime(&now);
-
-  snprintf(buf, 20, "%04d-%02d-%02d %02d:%02d:%02d",
-    tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, 
-    tm->tm_hour, tm->tm_min, tm->tm_sec);
-
+  if (!strftime(buf, len, "%F %T", localtime(&now))) return NULL;
   return buf;
 
 }

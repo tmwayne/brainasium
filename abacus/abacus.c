@@ -187,18 +187,17 @@ double play(int argc, char **argv) {
     case DIV: answer = divide(2); break;
   }
 
-  while (getchar()) break;
+  
+  double guess = 0;
+  scanf("%lf", &guess);
 
-  switch (op) {
-    case ADD: case SUB: case MUL:
-      printf("= %0.f\n", answer);
-      break;
-    case DIV: 
-      printf("= %.4f\n", answer);
-      break;
+  if (guess == answer) {
+    printf("You got it!\n");
+    return 1;
+  }  else {
+    printf("Nope, it's %.*f\n", op == DIV ? 4 : 0, answer);
+    return 0;
   }
-
-  return 1;
 
 }
 
