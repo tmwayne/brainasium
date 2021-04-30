@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
   if (fout) {
     char now[20];
     fprintf(fout, "%s|", timestamp(now, 20));
-    fprintf(fout, "%s|", exercise);
+    fprintf(fout, "%s|", selection);
     fprintf(fout, "%ld|", elapsed);
     fprintf(fout, "%g\n", score);
     fclose(fout);
