@@ -11,10 +11,9 @@
 #include <time.h>              // time
 #include <limits.h>            // LINE_MAX
 #include <string.h>            // strdup
-#include <readline/readline.h> // readline
 #include "argparse.h"
 
-#include <cstrings.h>         // strmatch
+#include <cstrings.h>          // strmatch, get_line
 #include <error.h>             // assert
 #include "exercise.h"          // exercise_T, exercise_new
 #include "registry.h"          // entry_T, entry_new
@@ -28,6 +27,14 @@ struct pair {
   char *a;
   char *b;
 };
+
+static void swap(struct pair **a, struct pair **b) {
+
+  struct pair *tmp = *a;
+  *a = *b;
+  *b = tmp;
+
+}
 
 void shuffle_quiz(struct pair **quiz, int n) {
 
@@ -61,26 +68,39 @@ int load_quiz(struct pair **quiz, FILE *fd) {
 
 int give_quiz(struct pair **quiz, int len) {
 
-  char *guess;
+  char guess[MAX_BUF];
   int tries = 0;
   int nright = 0;
+  int nwrong = 0;
 
   for (int i=0; i<len; i++) {
     printf("%s : ", quiz[i]->a);
     for ( tries=0; tries < 3; tries++) {
-      // TODO: use the stack instead of the allocating on the heap every time
-      char *guess = readline(NULL);
-      if (strcasematch(guess, quiz[i]->b)) {
-        nright++;
-        break;
-      }
+      get_line(guess, MAX_BUF, stdin); 
+      if (strcasematch(guess, quiz[i]->b)) break;
       else if (tries < 2) printf("Nope, try again : ");
-      else printf("The answer is %s...\n", quiz[i]->b);
-      free(guess);
+      else {
+        printf("The answer is %s...\n", quiz[i]->b);
+        swap(&quiz[nwrong], &quiz[i]);
+        nwrong++;
+      }
     }
   }
 
-  return nright;
+  return len - nwrong;
+
+}
+
+int write_misses(struct pair **quiz, int len, FILE *fd) {
+
+  // Write headers
+  fprintf(fd, "%s|%s\n", quiz[0]->a, quiz[0]->b);
+  quiz++;
+
+  for (int i=0; i<len; i++) 
+    fprintf(fd, "%s|%s\n", quiz[i]->a, quiz[i]->b);
+
+  return 0;
 
 }
 
@@ -101,17 +121,29 @@ double play(int argc, char **argv) {
   }
 
   int nlines_config = (long) dict_get(configs, "nlines");
-  // Note : nlines_config is a length not an index, so we increment it before
-  // setting it as value
+  // nlines includes the header
   nlines = nlines_config && nlines_config < nlines ? ++nlines_config : nlines;
 
   // Prepare quiz
-  shuffle_quiz(quiz+1, nlines-1); // ignore header
+  nlines--; // skip header
+  shuffle_quiz(quiz+1, nlines); // ignore header
 
   // Give quiz
-  double score = (double) give_quiz(quiz+1, nlines-1) / (nlines-1);
+  int nright = give_quiz(quiz+1, nlines);
+  double score = (double) nright / nlines;
 
   printf("You scored %.0f%!\n", 100*score);
+
+  // Save misses
+  char *fmisses = NULL;
+  if ((fmisses = dict_get(configs, "misses"))) {
+    FILE *fout = fopen(fmisses, "w");
+    if (!fout) {
+      fprintf(stderr, "Unable to open misses file...\n");
+      exit(EXIT_FAILURE);
+    }
+    write_misses(quiz, nlines - nright, fout);
+  }
 
   // Cleanup
   // TODO: free configs dictionary
