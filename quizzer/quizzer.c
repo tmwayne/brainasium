@@ -23,6 +23,8 @@
 #define NLINES 128
 #define MAX_BUF 128
 
+#define config_get(key) dict_get(configs, (key))
+
 struct pair {
   char *a;
   char *b;
@@ -66,7 +68,7 @@ int load_quiz(struct pair **quiz, FILE *fd) {
 
 }
 
-int give_quiz(struct pair **quiz, int len) {
+int give_quiz(struct pair **quiz, int len, int nguess) {
 
   char guess[MAX_BUF];
   int tries = 0;
@@ -75,10 +77,10 @@ int give_quiz(struct pair **quiz, int len) {
 
   for (int i=0; i<len; i++) {
     printf("%s : ", quiz[i]->a);
-    for ( tries=0; tries < 3; tries++) {
+    for ( tries=0; tries < nguess; tries++) {
       get_line(guess, MAX_BUF, stdin); 
       if (strcasematch(guess, quiz[i]->b)) break;
-      else if (tries < 2) printf("Nope, try again : ");
+      else if (tries < nguess-1) printf("Nope, try again : ");
       else {
         printf("The answer is %s...\n", quiz[i]->b);
         swap(&quiz[nwrong], &quiz[i]);
@@ -106,8 +108,13 @@ int write_misses(struct pair **quiz, int len, FILE *fd) {
 
 double play(int argc, char **argv) {
 
-  // Load command-line arguments
   dict_T configs = dict_new();
+
+  // Set defaults
+  dict_set(configs, "nguess", 3);
+
+
+  // Load command-line arguments
   argp_parse(&argp, argc, argv, 0, 0, configs);
   
   // Load quiz
@@ -120,23 +127,23 @@ double play(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  int nlines_config = (long) dict_get(configs, "nlines");
-  // nlines includes the header
-  nlines = nlines_config && nlines_config < nlines ? ++nlines_config : nlines;
-
   // Prepare quiz
   nlines--; // skip header
   shuffle_quiz(quiz+1, nlines); // ignore header
 
+  int nlines_config = 0;
+  if ((nlines_config = (long) config_get("nlines")))
+    nlines = nlines_config < nlines ? nlines_config : nlines;
+
   // Give quiz
-  int nright = give_quiz(quiz+1, nlines);
+  int nright = give_quiz(quiz+1, nlines, (int) (long) config_get("nguess"));
   double score = (double) nright / nlines;
 
   printf("You scored %.0f%!\n", 100*score);
 
   // Save misses
   char *fmisses = NULL;
-  if ((fmisses = dict_get(configs, "misses"))) {
+  if ((fmisses = dict_get(configs, "fmisses"))) {
     FILE *fout = fopen(fmisses, "w");
     if (!fout) {
       fprintf(stderr, "Unable to open misses file...\n");

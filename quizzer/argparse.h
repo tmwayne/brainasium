@@ -15,7 +15,8 @@ const char *argp_program_bug_address = "<tylerwayne3@gmail.com>";
 
 static struct argp_option options[] = {
   {"misses", 'm', "file", 0, "File to write misses to"},
-  {"nlines", 'n', "num", 0, "Number of questions to give"},
+  {"num-lines", 'n', "n", 0, "Number of questions to give"},
+  {"num-guesses", 'g', "n", 0, "Number of guesses allowed"},
   // {"without-value", 'b', 0, 0, "Optional argument without value"},
   {0}
 };
@@ -25,10 +26,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
   dict_T configs = state->input;
 
   switch (key) {
-    case 'm': dict_set(configs, "misses", arg); break;
+    case 'm': dict_set(configs, "fmisses", arg); break;
     case 'n': dict_set(configs, "nlines", atol(arg)); break;
+    case 'g': dict_set(configs, "nguess", atol(arg)); break;
 
-    // stop at the first positional arg and capture the remaining ones
     case ARGP_KEY_ARG:
       if (state->arg_num <= 1) dict_set(configs, "file", arg);
       break;
