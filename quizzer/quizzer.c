@@ -12,6 +12,7 @@
 #include <limits.h>            // LINE_MAX
 #include <string.h>            // strdup
 #include <readline/readline.h> // readline
+#include "argparse.h"
 
 #include <cstrings.h>         // strmatch
 #include <error.h>             // assert
@@ -85,20 +86,24 @@ int give_quiz(struct pair **quiz, int len) {
 
 double play(int argc, char **argv) {
 
-  if (argc != 2) {
-    fprintf(stderr, "Usage: %s file\n", argv[0]);
-    exit(EXIT_FAILURE);
-  }
+  // Load command-line arguments
+  dict_T configs = dict_new();
+  argp_parse(&argp, argc, argv, 0, 0, configs);
   
   // Load quiz
-  FILE *fin = fopen(argv[1], "r");
+  FILE *fin = fopen(dict_get(configs, "file"), "r");
   struct pair *quiz[NLINES];
 
-  int nlines = load_quiz(quiz, fin);
-  if (nlines <= 0) {
+  int nlines;
+  if ((nlines = load_quiz(quiz, fin)) <= 0) {
     fprintf(stderr, "Failed to allocate memory for quiz...\n");
     exit(EXIT_FAILURE);
   }
+
+  int nlines_config = (long) dict_get(configs, "nlines");
+  // Note : nlines_config is a length not an index, so we increment it before
+  // setting it as value
+  nlines = nlines_config && nlines_config < nlines ? ++nlines_config : nlines;
 
   // Prepare quiz
   shuffle_quiz(quiz+1, nlines-1); // ignore header
@@ -109,6 +114,8 @@ double play(int argc, char **argv) {
   printf("You scored %.0f%!\n", 100*score);
 
   // Cleanup
+  // TODO: free configs dictionary
+  // dict_free(&configs);
   for (int i=0; i<nlines; i++) free(quiz[i]);
 
   return score;

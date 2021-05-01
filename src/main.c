@@ -74,6 +74,7 @@ int main(int argc, char** argv) {
   }
 
   // Cleanup
+  // TODO: free configs dictionary
   exercise_free(&exercise);
 
 }
