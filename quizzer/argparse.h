@@ -27,8 +27,11 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
   switch (key) {
     case 'm': dict_set(configs, "fmisses", arg); break;
-    case 'n': dict_set(configs, "nlines", atol(arg)); break;
-    case 'g': dict_set(configs, "nguess", atol(arg)); break;
+
+    // Note dict_set expects key to be (void *), we explicitly
+    // cast from int to prevent compiler warnings
+    case 'n': dict_set(configs, "nlines", (void *) atol(arg)); break;
+    case 'g': dict_set(configs, "nguess", (void *) atol(arg)); break;
 
     case ARGP_KEY_ARG:
       if (state->arg_num <= 1) dict_set(configs, "file", arg);

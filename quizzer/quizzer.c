@@ -24,6 +24,7 @@
 #define MAX_BUF 128
 
 #define config_get(key) dict_get(configs, (key))
+#define config_set(key, val) dict_set(configs, (key), (void *) (val))
 
 struct pair {
   char *a;
@@ -111,14 +112,13 @@ double play(int argc, char **argv) {
   dict_T configs = dict_new();
 
   // Set defaults
-  dict_set(configs, "nguess", 3);
-
+  config_set("nguess", 2);
 
   // Load command-line arguments
   argp_parse(&argp, argc, argv, 0, 0, configs);
   
   // Load quiz
-  FILE *fin = fopen(dict_get(configs, "file"), "r");
+  FILE *fin = fopen(config_get("file"), "r");
   struct pair *quiz[NLINES];
 
   int nlines;
@@ -143,7 +143,7 @@ double play(int argc, char **argv) {
 
   // Save misses
   char *fmisses = NULL;
-  if ((fmisses = dict_get(configs, "fmisses"))) {
+  if ((fmisses = config_get("fmisses"))) {
     FILE *fout = fopen(fmisses, "w");
     if (!fout) {
       fprintf(stderr, "Unable to open misses file...\n");
