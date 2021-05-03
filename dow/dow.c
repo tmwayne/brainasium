@@ -11,23 +11,43 @@
 
 #include <stdio.h>      // printf
 #include <stdlib.h>     // rand, srand, RAND_MAX
-#include <time.h>       // time, clock, CLOCKS_PER_SEC
+#include <time.h>       // mktime, localtime
+#include <strings.h>    // bzero
 
 #include <error.h>      // assert
 #include "registry.h"   // entry_new
-#include "exercise.h"       // exercise_new
+#include "exercise.h"   // exercise_new
 
 #define EXERCISE_NAME "dow"
 
 #define YEAR_MIN 1700
 #define YEAR_MAX 2100
 
+#define TM_YEAR_BASE 1900
+
 static int anchor_day[4] = { 2, 0, 5, 3 };
 
-int random_year() {
+static struct tm *rand_date() {
 
-  int year = YEAR_MIN + rand() / (RAND_MAX / (YEAR_MAX-YEAR_MIN));
-  return year;
+  srand(time(NULL));
+
+  // TODO: confirm that this is the best way to randomly pick a year
+  int day = rand() % 365; 
+  int year = rand() % (YEAR_MAX-YEAR_MIN) + (YEAR_MIN-TM_YEAR_BASE);
+
+  struct tm timeinfo;
+  time_t loctime;
+
+  bzero(&timeinfo, sizeof(struct tm));
+  timeinfo.tm_isdst = 1; // allow mktime to determine DST setting
+  timeinfo.tm_isdst = -1; // allow mktime to determine DST setting
+  timeinfo.tm_mon = 0;
+  timeinfo.tm_mday = day;
+  timeinfo.tm_year = year;
+
+  loctime = mktime(&timeinfo);
+
+  return localtime(&loctime);
 
 }
 
@@ -49,19 +69,23 @@ double play(int argc, char **argv) {
 
   srand(time(NULL)); // set random seed
 
-  int year = random_year();
-  int answer = doomsday(year);
+  struct tm *rnddate = rand_date();
 
-  char *prompt = "What is the day of the week for July 4th, %d? ";
-  printf(prompt, year);
+  char date[100];
+  strftime(date, 100, "%d %B %Y", rnddate); // date in format : 03 March 1978
+
+  char wday[10];
+  strftime(wday, 10, "%A", rnddate); // extract name of weekday
+
+  printf("What is the day of the week of %s ? ", date);
 
   char c;
   while (c = getchar()) break;
 
-  int score = (c == answer + '0');
+  int score = (c == rnddate->tm_wday + '0');
 
   if (score) printf("You got it!\n");
-  else printf("Nope, it's %d\n", answer);
+  else printf("Nope, it's %s (%d)\n", wday, rnddate->tm_wday);
 
   return score;
 
