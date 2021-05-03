@@ -22,7 +22,8 @@
 #define EXERCISE_NAME "flashcards"
 #define USERRC_PATH "/home/tyler/.config/flashcardsrc"
 
-#define NLINES 128
+// TODO: have NLINES be dynamic
+#define NLINES 512
 #define MAX_BUF 128
 
 #define config_get(key) dict_get(configs, (key))
