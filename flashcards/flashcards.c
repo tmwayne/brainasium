@@ -60,7 +60,7 @@ int load_cards(struct pair **cards, FILE *fd) {
   int n = 0;
 
   // TODO: prevent segfaults when >2 fields in input
-  for ( ; n<NLINES && get_line(line, LINE_MAX, fd)>0; n++ ) {
+  for ( ; n<NLINES && get_line(NULL, line, LINE_MAX, fd)==E_OK; n++ ) {
     if (!(cards[n] = calloc(1, sizeof(struct pair)))) return -1;
     char *saveptr = NULL;
     cards[n]->a = strdup(get_tok_r(line, '|', &saveptr));
@@ -82,7 +82,7 @@ int give_cards(struct pair **cards, int len, int nguess) {
     printf("%d. %s : ", i+1, cards[i]->a);
     // TODO: check that nguess is always greater than 0
     for ( tries=0; tries < nguess; tries++) {
-      get_line(guess, MAX_BUF, stdin); 
+      get_line(NULL, guess, MAX_BUF, stdin); 
       if (strcasematch(guess, cards[i]->b)) break;
       else if (tries < nguess-1) printf("Nope, try again : ");
       else {
@@ -153,6 +153,7 @@ double play(int argc, char **argv) {
   // Save misses
   char *fmisses = NULL;
   if ((fmisses = config_get("fmisses"))) {
+    // TODO: check that fmisses isn't the same as fin
     FILE *fout = fopen(fmisses, "w");
     if (!fout) {
       fprintf(stderr, "Unable to open misses file...\n");
