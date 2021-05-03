@@ -13,12 +13,14 @@
 #include <string.h>            // strdup
 #include "argparse.h"
 
+#include <configparse.h>       // configparse
 #include <cstrings.h>          // strmatch, get_line
 #include <error.h>             // assert
 #include "exercise.h"          // exercise_T, exercise_new
 #include "registry.h"          // entry_T, entry_new
 
-#define EXERCISE_NAME "quizzer"
+#define EXERCISE_NAME "flashcards"
+#define USERRC_PATH "/home/tyler/.config/flashcardsrc"
 
 #define NLINES 128
 #define MAX_BUF 128
@@ -39,37 +41,37 @@ static void swap(struct pair **a, struct pair **b) {
 
 }
 
-void shuffle_quiz(struct pair **quiz, int n) {
+void shuffle_cards(struct pair **cards, int n) {
 
   srand(time(NULL));
 
   for(size_t i=n-1; i>0; i--) {
     size_t j = rand() / (RAND_MAX / n);
-    struct pair *t = quiz[j];
-    quiz[j] = quiz[i];
-    quiz[i] = t;
+    struct pair *t = cards[j];
+    cards[j] = cards[i];
+    cards[i] = t;
   }
 
 }
 
-int load_quiz(struct pair **quiz, FILE *fd) {
+int load_cards(struct pair **cards, FILE *fd) {
 
   char line[LINE_MAX+1];
   int n = 0;
 
   // TODO: prevent segfaults when >2 fields in input
   for ( ; n<NLINES && get_line(line, LINE_MAX, fd)>0; n++ ) {
-    if (!(quiz[n] = calloc(1, sizeof(struct pair)))) return -1;
+    if (!(cards[n] = calloc(1, sizeof(struct pair)))) return -1;
     char *saveptr = NULL;
-    quiz[n]->a = strdup(get_tok_r(line, '|', &saveptr));
-    quiz[n]->b = strdup(get_tok_r(NULL, '|', &saveptr));
+    cards[n]->a = strdup(get_tok_r(line, '|', &saveptr));
+    cards[n]->b = strdup(get_tok_r(NULL, '|', &saveptr));
   }
 
   return n;
 
 }
 
-int give_quiz(struct pair **quiz, int len, int nguess) {
+int give_cards(struct pair **cards, int len, int nguess) {
 
   char guess[MAX_BUF];
   int tries = 0;
@@ -77,14 +79,15 @@ int give_quiz(struct pair **quiz, int len, int nguess) {
   int nwrong = 0;
 
   for (int i=0; i<len; i++) {
-    printf("%s : ", quiz[i]->a);
+    printf("%d. %s : ", i+1, cards[i]->a);
+    // TODO: check that nguess is always greater than 0
     for ( tries=0; tries < nguess; tries++) {
       get_line(guess, MAX_BUF, stdin); 
-      if (strcasematch(guess, quiz[i]->b)) break;
+      if (strcasematch(guess, cards[i]->b)) break;
       else if (tries < nguess-1) printf("Nope, try again : ");
       else {
-        printf("The answer is %s...\n", quiz[i]->b);
-        swap(&quiz[nwrong], &quiz[i]);
+        printf("The answer is %s...\n", cards[i]->b);
+        swap(&cards[nwrong], &cards[i]);
         nwrong++;
       }
     }
@@ -94,14 +97,14 @@ int give_quiz(struct pair **quiz, int len, int nguess) {
 
 }
 
-int write_misses(struct pair **quiz, int len, FILE *fd) {
+int write_misses(struct pair **cards, int len, FILE *fd) {
 
   // Write headers
-  fprintf(fd, "%s|%s\n", quiz[0]->a, quiz[0]->b);
-  quiz++;
+  fprintf(fd, "%s|%s\n", cards[0]->a, cards[0]->b);
+  cards++;
 
   for (int i=0; i<len; i++) 
-    fprintf(fd, "%s|%s\n", quiz[i]->a, quiz[i]->b);
+    fprintf(fd, "%s|%s\n", cards[i]->a, cards[i]->b);
 
   return 0;
 
@@ -114,29 +117,35 @@ double play(int argc, char **argv) {
   // Set defaults
   config_set("nguess", 2);
 
+  // TODO: rename configuration key names
+  // TODO: rename userrc (seems forced here)
+  // Load configurations
+  FILE *userrc = fopen(USERRC_PATH, "r");
+  if (userrc) configparse(configs, userrc);
+
   // Load command-line arguments
   argp_parse(&argp, argc, argv, 0, 0, configs);
   
-  // Load quiz
+  // Load flashcards
   FILE *fin = fopen(config_get("file"), "r");
-  struct pair *quiz[NLINES];
+  struct pair *cards[NLINES];
 
   int nlines;
-  if ((nlines = load_quiz(quiz, fin)) <= 0) {
-    fprintf(stderr, "Failed to allocate memory for quiz...\n");
+  if ((nlines = load_cards(cards, fin)) <= 0) {
+    fprintf(stderr, "Failed to allocate memory for flashcards...\n");
     exit(EXIT_FAILURE);
   }
 
-  // Prepare quiz
+  // Prepare flashcards
   nlines--; // skip header
-  shuffle_quiz(quiz+1, nlines); // ignore header
+  shuffle_cards(cards+1, nlines); // ignore header
 
   int nlines_config = 0;
   if ((nlines_config = (long) config_get("nlines")))
     nlines = nlines_config < nlines ? nlines_config : nlines;
 
-  // Give quiz
-  int nright = give_quiz(quiz+1, nlines, (int) (long) config_get("nguess"));
+  // Give flashcards
+  int nright = give_cards(cards+1, nlines, (int) (long) config_get("nguess"));
   double score = (double) nright / nlines;
 
   printf("You scored %.0f%!\n", 100*score);
@@ -149,13 +158,13 @@ double play(int argc, char **argv) {
       fprintf(stderr, "Unable to open misses file...\n");
       exit(EXIT_FAILURE);
     }
-    write_misses(quiz, nlines - nright, fout);
+    write_misses(cards, nlines - nright, fout);
   }
 
   // Cleanup
   // TODO: free configs dictionary
   // dict_free(&configs);
-  for (int i=0; i<nlines; i++) free(quiz[i]);
+  for (int i=0; i<nlines; i++) free(cards[i]);
 
   return score;
 

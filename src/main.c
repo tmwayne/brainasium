@@ -7,16 +7,16 @@
 //
 
 #include <stdlib.h>      // calloc
+#include <time.h>        // time_t,
+#include "argparse.h"    // argp_parse
+
 #include <dict.h>        // dict_T, dict_new, dict_free
 #include <configparse.h> // configparse
-#include <time.h>        // time_t,
 #include "registry.h"    // load_plugins
-#include "argparse.h"
-
 #include "exercise.h"    // exercise_T, exercise_init
 
-#define DEFAULT_USER_RC_PATH "/home/tyler/.config/gymrc"
-#define DEFAULT_EXERCISE_DIR "/home/tyler/.local/lib/gym/exercises"
+#define DEFAULT_USER_RC_PATH "/home/tyler/.config/brainasiumrc"
+#define DEFAULT_EXERCISE_DIR "/home/tyler/.local/lib/brainasium/exercises"
 #define DEFAULT_EXERCISE "sample"
 
 static void set_defaults(dict_T);

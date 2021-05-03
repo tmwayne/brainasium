@@ -7,7 +7,7 @@
 #
 
 AC_PREREQ([2.69])
-AC_INIT([Gym], [0.1], [tylerwayne3@gmail.com])
+AC_INIT([Brainasium], [0.1], [tylerwayne3@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 
 LT_PREREQ([2.2.])
@@ -44,7 +44,7 @@ AC_CONFIG_FILES([
   sample-exercise/Makefile
   dow/Makefile
   abacus/Makefile
-  quizzer/Makefile
+  flashcards/Makefile
   test/Makefile])
 
 AC_OUTPUT

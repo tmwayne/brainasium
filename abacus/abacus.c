@@ -189,6 +189,8 @@ double play(int argc, char **argv) {
 
   
   double guess = 0;
+
+  // TODO: read in whole line then use sscanf to parse number
   scanf("%lf", &guess);
 
   if (guess == answer) {

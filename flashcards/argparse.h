@@ -3,7 +3,7 @@
 // argparse.h
 // -----------------------------------------------------------------------------
 //
-// Argument parser for quizzer
+// Argument parser for Flashcards
 //
 
 #include <argp.h>
@@ -45,6 +45,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
   return 0;
 }
 
-static char args_doc[] = "quiz-file";
-static char doc[] = "quizzer -- strengthen memory with flashcard style exercise";
+static char args_doc[] = "card-file";
+static char doc[] = "flashcards -- improve memory and learn new topics";
 static struct argp argp = { options, parse_opt, args_doc, doc };
