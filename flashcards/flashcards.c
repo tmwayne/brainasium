@@ -29,42 +29,44 @@
 #define config_get(key) dict_get(configs, (key))
 #define config_set(key, val) dict_set(configs, (key), (void *) (val))
 
-struct pair {
+struct card {
   char *a;
   char *b;
 };
 
-static void swap(struct pair **a, struct pair **b) {
+static void swap(struct card **a, struct card **b) {
 
-  struct pair *tmp = *a;
+  struct card *tmp = *a;
   *a = *b;
   *b = tmp;
 
 }
 
-void shuffle_cards(struct pair **cards, int n) {
+void shuffle_cards(struct card **cards, int n) {
 
   srand(time(NULL));
 
   for(size_t i=n-1; i>0; i--) {
     size_t j = rand() / (RAND_MAX / n);
-    struct pair *t = cards[j];
+    struct card *t = cards[j];
     cards[j] = cards[i];
     cards[i] = t;
   }
 
 }
 
-int load_cards(struct pair **cards, FILE *fd) {
+int load_cards(struct card **cards, FILE *fd) {
 
   char line[LINE_MAX+1];
   int n = 0;
 
   // TODO: prevent segfaults when >2 fields in input
   for ( ; n<NLINES && get_line(NULL, line, LINE_MAX, fd)==E_OK; n++ ) {
-    if (!(cards[n] = calloc(1, sizeof(struct pair)))) return -1;
+    if (!(cards[n] = calloc(1, sizeof(struct card)))) return -1;
     char *saveptr = NULL;
     cards[n]->a = strdup(get_tok_r(line, '|', &saveptr));
+
+    // TODO: return error on malformed input
     cards[n]->b = strdup(get_tok_r(NULL, '|', &saveptr));
   }
 
@@ -72,7 +74,7 @@ int load_cards(struct pair **cards, FILE *fd) {
 
 }
 
-int give_cards(struct pair **cards, int len, int nguess) {
+int give_cards(struct card **cards, int len, int nguess) {
 
   char guess[MAX_BUF];
   int tries = 0;
@@ -98,7 +100,7 @@ int give_cards(struct pair **cards, int len, int nguess) {
 
 }
 
-int write_misses(struct pair **cards, int len, FILE *fd) {
+int write_misses(struct card **cards, int len, FILE *fd) {
 
   // Write headers
   fprintf(fd, "%s|%s\n", cards[0]->a, cards[0]->b);
@@ -112,6 +114,10 @@ int write_misses(struct pair **cards, int len, FILE *fd) {
 }
 
 double play(int argc, char **argv) {
+
+  // TODO: add argparse
+  // TODO: add option to reverse the cards
+  // TODO: check that the quiz and misses file aren't the same
 
   dict_T configs = dict_new();
 
@@ -129,7 +135,7 @@ double play(int argc, char **argv) {
   
   // Load flashcards
   FILE *fin = fopen(config_get("file"), "r");
-  struct pair *cards[NLINES];
+  struct card *cards[NLINES];
 
   int nlines;
   if ((nlines = load_cards(cards, fin)) <= 0) {
@@ -153,8 +159,7 @@ double play(int argc, char **argv) {
 
   // Save misses
   char *fmisses = NULL;
-  if ((fmisses = config_get("fmisses"))) {
-    // TODO: check that fmisses isn't the same as fin
+  if ((fmisses = config_get("fmisses")) && nright < nlines) {
     FILE *fout = fopen(fmisses, "w");
     if (!fout) {
       fprintf(stderr, "Unable to open misses file...\n");
