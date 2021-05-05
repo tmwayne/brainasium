@@ -74,7 +74,7 @@ int load_cards(struct card **cards, FILE *fd) {
 
 }
 
-int give_cards(struct card **cards, int len, int nguess) {
+int give_cards(struct card **cards, int len, int nguess, int reverse) {
 
   char guess[MAX_BUF];
   int tries = 0;
@@ -82,14 +82,17 @@ int give_cards(struct card **cards, int len, int nguess) {
   int nwrong = 0;
 
   for (int i=0; i<len; i++) {
-    printf("%d. %s : ", i+1, cards[i]->a);
+    char *prompt = reverse ? cards[i]->b : cards[i]->a;
+    char *answer = reverse ? cards[i]->a : cards[i]->b;
+
+    printf("%d. %s : ", i+1, prompt);
     // TODO: check that nguess is always greater than 0
     for ( tries=0; tries < nguess; tries++) {
       get_line(NULL, guess, MAX_BUF, stdin); 
-      if (strcasematch(guess, cards[i]->b)) break;
+      if (strcasematch(guess, answer)) break;
       else if (tries < nguess-1) printf("Nope, try again : ");
       else {
-        printf("The answer is %s...\n", cards[i]->b);
+        printf("The answer is %s...\n", answer);
         swap(&cards[nwrong], &cards[i]);
         nwrong++;
       }
@@ -115,8 +118,6 @@ int write_misses(struct card **cards, int len, FILE *fd) {
 
 double play(int argc, char **argv) {
 
-  // TODO: add argparse
-  // TODO: add option to reverse the cards
   // TODO: check that the quiz and misses file aren't the same
 
   dict_T configs = dict_new();
@@ -132,46 +133,51 @@ double play(int argc, char **argv) {
 
   // Load command-line arguments
   argp_parse(&argp, argc, argv, 0, 0, configs);
+
+  // Convert integer configurations
+  int nlines_config = (int) (long) config_get("nlines");
+  int nguess = (int) (long) config_get("nguess");
+  
+  // TODO: this potentially converts a NULL pointer to zero, make this simpler
+  int reverse = (int) (long) config_get("reverse");
   
   // Load flashcards
   FILE *fin = fopen(config_get("file"), "r");
   struct card *cards[NLINES];
 
-  int nlines;
-  if ((nlines = load_cards(cards, fin)) <= 0) {
+  int ncards;
+  if ((ncards = load_cards(cards, fin)) <= 0) {
     fprintf(stderr, "Failed to allocate memory for flashcards...\n");
     exit(EXIT_FAILURE);
   }
 
   // Prepare flashcards
-  nlines--; // skip header
-  shuffle_cards(cards+1, nlines); // ignore header
+  ncards--; // skip header
+  shuffle_cards(cards+1, ncards); // ignore header
 
-  int nlines_config = 0;
-  if ((nlines_config = (long) config_get("nlines")))
-    nlines = nlines_config < nlines ? nlines_config : nlines;
+  if (nlines_config) ncards = nlines_config < ncards ? nlines_config : ncards;
 
   // Give flashcards
-  int nright = give_cards(cards+1, nlines, (int) (long) config_get("nguess"));
-  double score = (double) nright / nlines;
+  int nright = give_cards(cards+1, ncards, nguess, reverse);
+  double score = (double) nright / ncards;
 
   printf("You scored %.0f%!\n", 100*score);
 
   // Save misses
   char *fmisses = NULL;
-  if ((fmisses = config_get("fmisses")) && nright < nlines) {
+  if ((fmisses = config_get("fmisses")) && nright < ncards) {
     FILE *fout = fopen(fmisses, "w");
     if (!fout) {
       fprintf(stderr, "Unable to open misses file...\n");
       exit(EXIT_FAILURE);
     }
-    write_misses(cards, nlines - nright, fout);
+    write_misses(cards, ncards - nright, fout);
   }
 
   // Cleanup
   // TODO: free configs dictionary
   // dict_free(&configs);
-  for (int i=0; i<nlines; i++) free(cards[i]);
+  for (int i=0; i<ncards; i++) free(cards[i]);
 
   return score;
 

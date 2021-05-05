@@ -17,7 +17,7 @@ static struct argp_option options[] = {
   {"misses", 'm', "file", 0, "File to write misses to"},
   {"num-lines", 'n', "n", 0, "Number of questions to give"},
   {"num-guesses", 'g', "n", 0, "Number of guesses allowed"},
-  // {"without-value", 'b', 0, 0, "Optional argument without value"},
+  {"reverse", 'r', 0, 0, "Prompt the reverse side of the cards"},
   {0}
 };
 
@@ -26,6 +26,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
   dict_T configs = state->input;
 
   switch (key) {
+    case 'r': dict_set(configs, "reverse", (void *) 1); break;
     case 'm': dict_set(configs, "fmisses", arg); break;
 
     // Note dict_set expects key to be (void *), we explicitly
