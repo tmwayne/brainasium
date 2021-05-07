@@ -29,11 +29,11 @@
 
 static int anchor_day[4] = { 2, 0, 5, 3 };
 
+// stackoverflow.com/a/42131603
 static int mod(int a, int b) {
-  
-  int r = a % b;
-  return r < 0 ? r + b : r;
 
+  return (x % b + b) % b;
+  
 }
 
 static struct tm *rand_date() {
