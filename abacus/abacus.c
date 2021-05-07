@@ -18,14 +18,17 @@
 #include <string.h>       // strcmp
 
 #include <error.h>        // assert
+#include "argparse.h"     // argp_parse
 #include <configparse.h>  // configparse
 #include <dict.h>         // dict_T, dict_new, dict_get
 #include "exercise.h"
 #include "registry.h"
+#include "cstrings.h"     // get_line
+
+#define config_set(key,val) dict_set(configs, (key), (void *) (val))
+#define config_get(key) dict_get(configs, (key))
 
 #define EXERCISE_GAME "abacus"
-
-enum ops { ADD, SUB, MUL, DIV };
 
 int select_op(char *input) {
   
@@ -135,63 +138,42 @@ double divide(int digits) {
 
 double play(int argc, char **argv) {
 
-  // Default configurations
-  int add_digits = 7;
-  int add_nums = 4;
-  int sub_digits = 7;
-  int sub_nums = 4;
 
-  // User-configurations
-  dict_T configs = dict_new();
-  FILE *fd = fopen("/home/tyler/.config/abacusrc", "r");
-  if (fd) {
-    configparse(configs, fd);
-    char *tmp;
-    if ((tmp = dict_get(configs, "add_digits"))) add_digits = atoi(tmp);
-    if ((tmp = dict_get(configs, "add_nums"))) add_nums = atoi(tmp);
-    if ((tmp = dict_get(configs, "sub_digits"))) sub_digits = atoi(tmp);
-    if ((tmp = dict_get(configs, "sub_nums"))) sub_nums = atoi(tmp);
-  }
-
-  // Command-line arguments
-  int op;
+  // Initial Set-up
   unsigned int seed = time(NULL);
   srand(seed);
-
-  if (argc == 1) {
-    int rnd = rand() % 4;
-    switch (rnd) {
-      case 0: op = ADD; break;
-      case 1: op = SUB; break;
-      case 2: op = MUL; break;
-      case 3: op = DIV; break;
-    }
-  }
-
-  else if (argc > 2) {
-    fprintf(stderr, "Usage: %s op\n", argv[0]);
-    exit(EXIT_FAILURE);
-  }
-
-  else if ((op = select_op(argv[1])) < 0) {
-    fprintf(stderr, "Invalid selection. Options are add, sub, mul, div\n");
-    exit(EXIT_FAILURE);
-  }
-  
-  // TODO: refactor this and turn into a function
-  double answer;
-  switch (op) {
-    case ADD: answer = add(add_digits, add_nums); break;
-    case SUB: answer = sub(sub_digits, sub_nums); break;
-    case MUL: answer = mul(3);    break;
-    case DIV: answer = divide(2); break;
-  }
-
-  
+  dict_T configs = dict_new();
   double guess = 0;
+  double answer;
 
-  // TODO: read in whole line then use sscanf to parse number
-  scanf("%lf", &guess);
+  // Set default configurations
+  config_set("op", ADD);
+  config_set("digits", 7);
+  config_set("nums", 4);
+
+  // Load configurations
+  // TODO: config args need to be parsed as digits
+  FILE *fd = fopen("/home/tyler/.config/abacusrc", "r");
+  if (fd) configparse(configs, fd);
+
+  // Load command-line arguments
+  argp_parse(&argp, argc, argv, 0, 0, configs);
+
+  int op = (long) dict_get(configs, "op");
+  int digits = (long) config_get("digits");
+  int nums = (long) config_get("nums");
+  
+  switch (op) {
+    case ADD: answer = add(digits, nums); break;
+    case SUB: answer = sub(digits, nums); break;
+    case MUL: answer = mul(3);            break;
+    case DIV: answer = divide(2);         break;
+  }
+
+  char line[20];
+  get_line(NULL, line, 20, stdin);
+  guess = strtod(line, NULL);
+  // scanf("%lf", &guess);
 
   if (guess == answer) {
     printf("You got it!\n");
