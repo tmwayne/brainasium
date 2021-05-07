@@ -7,7 +7,17 @@
 //
 
 #include <argp.h>
+#include <string.h> // strcmp
+
 #include <dict.h>   // dict_T, dict_set
+
+#define CONFIG_SET(key, val) dict_set(configs, (key), (void *) (val))
+
+enum dow_config {
+  FORMAT_DEFAULT = 0,
+  FORMAT_DAY = 1,
+  FORMAT_YEAR = 2
+};
 
 const char *argp_program_version = "0.0.1";
 const char *argp_program_bug_address = "<tylerwayne3@gmail.com>";
@@ -22,13 +32,15 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
   dict_T configs = state->input;
 
   switch (key) {
-    case 'f': dict_set(configs, "format", arg); break;
 
-    // case ARGP_KEY_ARG:
-      // if (state->arg_num <= 1) dict_set(configs, "file", arg);
-      // break;
+    case 'f': 
+      if (!strcmp(arg, "day")) CONFIG_SET("format", FORMAT_DAY);
+      else if (!strcmp(arg, "year")) CONFIG_SET("format", FORMAT_YEAR);
+      else fprintf(stderr, "Format not recognized. Using default...\n");
+      break;
 
-    // case ARGP_KEY_END: if (state->arg_num > 0) argp_usage(state); break;
+    // Don't accept key word arguments
+    
     default: return ARGP_ERR_UNKNOWN;
   }
 
@@ -36,6 +48,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 }
 
 // static char args_doc[] = "";
-static char doc[] = "dow -- figure out the day-of-week for a given date";
-// static struct argp argp = { options, parse_opt, args_doc, doc };
+static char doc[] = "dow -- figure out day-of-week for a given date";
 static struct argp argp = { options, parse_opt, NULL, doc };
+
+#undef CONFIG_SET

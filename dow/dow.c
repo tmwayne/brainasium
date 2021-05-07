@@ -14,18 +14,27 @@
 #include <time.h>       // mktime, localtime
 #include <strings.h>    // bzero
 
+#include "argparse.h"   // argp_parse
 #include <error.h>      // assert
 #include "registry.h"   // entry_new
 #include "exercise.h"   // exercise_new
 
 #define EXERCISE_NAME "dow"
 
+// TODO: set this is a configuration parameter
 #define YEAR_MIN 1700
 #define YEAR_MAX 2100
 
 #define TM_YEAR_BASE 1900
 
 static int anchor_day[4] = { 2, 0, 5, 3 };
+
+static int mod(int a, int b) {
+  
+  int r = a % b;
+  return r < 0 ? r + b : r;
+
+}
 
 static struct tm *rand_date() {
 
@@ -51,7 +60,7 @@ static struct tm *rand_date() {
 
 }
 
-int doomsday(int year) {
+int from_year(int year) {
 
   int century = year / 100;
   year %= 100;
@@ -67,25 +76,52 @@ int doomsday(int year) {
 
 double play(int argc, char **argv) {
 
+  dict_T configs = dict_new();
+
+  // Load command-line arguments
+  argp_parse(&argp, argc, argv, 0, 0, configs);
+
   srand(time(NULL)); // set random seed
 
   struct tm *rnddate = rand_date();
-
   char date[100];
-  strftime(date, 100, "%d %B %Y", rnddate); // date in format : 03 March 1978
+  strftime(date, 100, "%B %d %Y", rnddate); // date in format : March 03 1978
 
-  char wday[10];
-  strftime(wday, 10, "%A", rnddate); // extract name of weekday
+  int year_offset = from_year(rnddate->tm_year + TM_YEAR_BASE);
 
-  printf("What is the day of the week of %s ? ", date);
+  int day_offset = mod(rnddate->tm_wday - year_offset, 7);
+  int answer;
+
+  switch((long) dict_get(configs, "format")) {
+    
+    case FORMAT_DAY:
+      answer = day_offset;
+      printf("What is the day offset for %s ? ", date);
+      break;
+
+    case FORMAT_YEAR:
+      answer = year_offset;
+      printf("What is the year offset for %d ? ", rnddate->tm_year + TM_YEAR_BASE);
+      break;
+
+    default:
+      answer = rnddate->tm_wday;
+      printf("What is the day of the week of %s ? ", date);
+      break;
+      
+  };
+
+  // char wday[10];
+  // strftime(wday, 10, "%A", rnddate); // extract name of weekday
 
   char c;
   while (c = getchar()) break;
 
-  int score = (c == rnddate->tm_wday + '0');
+  int score = (c == answer + '0');
 
   if (score) printf("You got it!\n");
-  else printf("Nope, it's %s (%d)\n", wday, rnddate->tm_wday);
+  // else printf("Nope, it's %s (%d)\n", wday, rnddate->tm_wday);
+  else printf("Nope, it's %d\n", answer);
 
   return score;
 
