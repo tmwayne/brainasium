@@ -32,7 +32,7 @@ static int anchor_day[4] = { 2, 0, 5, 3 };
 // stackoverflow.com/a/42131603
 static int mod(int a, int b) {
 
-  return (x % b + b) % b;
+  return (a % b + b) % b;
   
 }
 
