@@ -30,6 +30,15 @@
 
 #define EXERCISE_GAME "abacus"
 
+static long *longdup(long x) {
+
+  long *tmp = malloc(sizeof(long));
+  *tmp = x;
+  return tmp;
+
+}
+  
+
 int select_op(char *input) {
   
   if (strcmp(input, "add") == 0) return ADD;
@@ -148,8 +157,8 @@ double play(int argc, char **argv) {
 
   // Set default configurations
   config_set("op", ADD);
-  config_set("digits", 7);
-  config_set("nums", 4);
+  config_set("digits", longdup(7));
+  config_set("nums", longdup(4));
 
   // Load configurations
   // TODO: config args need to be parsed as digits
@@ -160,8 +169,8 @@ double play(int argc, char **argv) {
   argp_parse(&argp, argc, argv, 0, 0, configs);
 
   int op = (long) dict_get(configs, "op");
-  int digits = (long) config_get("digits");
-  int nums = (long) config_get("nums");
+  int digits = *(long *) config_get("digits");
+  int nums = *(long *) config_get("nums");
   
   switch (op) {
     case ADD: answer = add(digits, nums); break;

@@ -34,12 +34,23 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
   dict_T configs = state->input;
   long op;
+  long *tmp;
+
 
   switch (key) {
 
-    case 'd': config_set("digits", atol(arg));  break;
-    case 'n': config_set("nums", atol(arg));    break;
+    case 'd': 
+      tmp = malloc(sizeof(long));
+      *tmp = atol(arg);
+      config_set("digits", tmp);  
+      break;
+    case 'n': 
+      tmp = malloc(sizeof(long));
+      *tmp = atol(arg);
+      config_set("nums", tmp);
+      break;
 
+    // TODO: be consistent in use of pointers to long
     case ARGP_KEY_ARG:
       if (state->arg_num <= 1) {
         if      (!strcmp(arg, "add")) op = ADD;
@@ -55,9 +66,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
       }
       break;
 
-    case ARGP_KEY_END: 
-      // if (state->arg_num < 1) config_set("op", DEFAULT);
-      if (state->arg_num > 1) argp_usage(state);
+    case ARGP_KEY_END: if (state->arg_num > 1) argp_usage(state); break;
+
     default: return ARGP_ERR_UNKNOWN;
   }
 
@@ -67,3 +77,5 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 static char args_doc[] = "operation";
 static char doc[] = "abacus -- calculate your heart out";
 static struct argp argp = { options, parse_opt, args_doc, doc };
+
+#undef config_set
