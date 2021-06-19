@@ -69,7 +69,13 @@ int main(int argc, char** argv) {
     fprintf(fout, "%s|", timestamp(now, 20));
     fprintf(fout, "%s|", selection);
     fprintf(fout, "%ld|", elapsed);
-    fprintf(fout, "%g\n", score);
+    fprintf(fout, "%g|", score);
+    // TODO: Check that | isn't in call string
+    for (int i=0; i<argc; i++) fprintf(fout, "%s ", argv[i]);
+    fprintf(fout, "\n");
+
+
+    // TODO: add field for exercise specific data
     fclose(fout);
   }
 

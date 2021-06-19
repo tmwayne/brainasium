@@ -83,6 +83,7 @@ char *pretty_int(char *str, size_t n, int x) {
 
 }
 
+// TODO: use larger numeric type
 double add(int digits, int n) {
 
   int answer = 0;
@@ -175,7 +176,7 @@ double play(int argc, char **argv) {
   switch (op) {
     case ADD: answer = add(digits, nums); break;
     case SUB: answer = sub(digits, nums); break;
-    case MUL: answer = mul(3);            break;
+    case MUL: answer = mul(4);            break;
     case DIV: answer = divide(2);         break;
   }
 
