@@ -8,7 +8,6 @@
 // Tyler Wayne © 2021
 //
 
-// TODO: add argopts
 // TODO: have digits be an optional flag
 
 #include <stdio.h>
@@ -49,13 +48,13 @@ int select_op(char *input) {
 
 }
 
-int ndigits(int x) {
+int ndigits(long int x) {
 
-  return floor(log10(x)) + 1;
+  return floor(log10l(x)) + 1;
 
 }
 
-char *pretty_int(char *str, size_t n, int x) {
+char *pretty_int(char *str, size_t n, long int x) {
 
   int len = ndigits(x); 
   len += (len-1)/3; // add space for commas
@@ -84,26 +83,34 @@ char *pretty_int(char *str, size_t n, int x) {
 }
 
 // TODO: use larger numeric type
-double add(int digits, int n) {
+// TODO: adjust pretty_int to accommodate larger numeric type
+long double add(int digits, int n) {
 
-  int answer = 0;
+  long int answer = 0;
 
   printf("(+)\n\n");
 
   for (int i=0; i<n; i++) {
-    int tmp = rand() % (int) pow(10, digits);
+    long int tmp = rand() % (long int) pow(10, digits);
     answer += tmp;
 
-    char buf[14] = {0};
-    pretty_int(buf, 13, tmp);
-    printf("%*s\n\n", 13, buf);
+    int len = digits + (digits-1)/3 + 1;
+    // char buf[20] = {0};
+    // TODO: pretty_int throws a SEGFAULT when being passed a non-null buffer
+
+    char *buf = pretty_int(NULL, 0, tmp);
+    printf("%*s\n\n", len-1, buf);
+
+    // TODO: throws a double free error (not sure why?)
+    // free(buf);
+
   }
 
   return answer;
 
 }
 
-double sub(int digits, int n) {
+long double sub(int digits, int n) {
 
   if (digits < 2) digits = 2;
   char buf[14];
@@ -124,7 +131,7 @@ double sub(int digits, int n) {
 
 }
 
-double mul(int digits) {
+long double mul(int digits) {
 
   int x = rand() % (int) pow(10, digits);
   int y = rand() % (int) pow(10, digits);
@@ -135,10 +142,10 @@ double mul(int digits) {
 
 }
 
-double divide(int digits) {
+long double divide(int digits) {
 
-  double x = rand() % (int) pow(10, digits);
-  double y = rand() % (int) pow(10, digits);
+  long double x = rand() % (int) pow(10, digits);
+  long double y = rand() % (int) pow(10, digits);
 
   printf("%g / %g ?\n", x, y);
 
@@ -153,8 +160,8 @@ double play(int argc, char **argv) {
   unsigned int seed = time(NULL);
   srand(seed);
   dict_T configs = dict_new();
-  double guess = 0;
-  double answer;
+  long double guess = 0;
+  long double answer;
 
   // Set default configurations
   config_set("op", ADD);
@@ -182,14 +189,14 @@ double play(int argc, char **argv) {
 
   char line[20];
   get_line(NULL, line, 20, stdin);
-  guess = strtod(line, NULL);
+  guess = strtold(line, NULL);
   // scanf("%lf", &guess);
 
   if (guess == answer) {
     printf("You got it!\n");
     return 1;
   }  else {
-    printf("Nope, it's %.*f\n", op == DIV ? 4 : 0, answer);
+    printf("Nope, it's %.*Lf\n", op == DIV ? 4 : 0, answer);
     return 0;
   }
 
